@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Intellisys &mdash; Research &amp; Decision Intelligence</title>
+<script>
+  // Blocking theme init: runs before first paint so there is a single
+  // source of truth (the <html> element) and no flash of the wrong theme.
+  (function () {
+    try {
+      var saved = localStorage.getItem('ridp:theme') || 'dark';
+      var resolved = saved === 'system'
+        ? (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light')
+        : saved;
+      document.documentElement.setAttribute('data-theme', resolved);
+      document.documentElement.dataset.themeMode = saved;
+    } catch (e) {
+      document.documentElement.setAttribute('data-theme', 'dark');
+    }
+  })();
+</script>
+<link rel="stylesheet" href="/css/theme.css" />
+<link rel="stylesheet" href="/css/dashboard.css" />
+<script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js" defer></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/marked/9.1.6/marked.min.js" defer></script>
+</head>
+<body>
+<div class="bg-ambient"></div>
+
+<div class="app-shell">
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-logo">
+      <span class="mark"><i data-lucide="network" style="width:16px;height:16px;color:white"></i></span>
+      <span class="label">Intellisys</span>
+    </div>
+    <div class="sidebar-item active" data-page="overview"><i data-lucide="layout-dashboard"></i><span class="label">Overview</span></div>
+    <div class="sidebar-item" data-page="new-run"><i data-lucide="plus-circle"></i><span class="label">New Research</span></div>
+    <div class="sidebar-item" data-page="runs"><i data-lucide="list"></i><span class="label">All Runs</span></div>
+    <div class="sidebar-item" data-page="monitor"><i data-lucide="activity"></i><span class="label">Live Monitor</span></div>
+    <div class="sidebar-item" data-page="report"><i data-lucide="file-text"></i><span class="label">Report Viewer</span></div>
+    <div class="sidebar-collapse-btn" id="collapseBtn"><i data-lucide="chevrons-left"></i></div>
+  </aside>
+
+  <div class="main">
+    <div class="topbar">
+      <div class="search-box">
+        <i data-lucide="search" style="width:14px;height:14px"></i>
+        <input type="text" id="searchInput" placeholder="Search workflow runs..." />
+      </div>
+      <div class="topbar-actions">
+        <div class="theme-toggle">
+          <button data-mode="light" title="Light"><i data-lucide="sun" style="width:14px;height:14px"></i></button>
+          <button data-mode="dark" title="Dark"><i data-lucide="moon" style="width:14px;height:14px"></i></button>
+          <button data-mode="system" title="System"><i data-lucide="monitor" style="width:14px;height:14px"></i></button>
+        </div>
+        <div class="icon-btn" title="Notifications"><i data-lucide="bell" style="width:16px;height:16px"></i></div>
+        <div class="avatar">IX</div>
+      </div>
+    </div>
+
+    <div class="content">
+
+
+      <!-- ============ OVERVIEW PAGE ============ -->
+      <section class="page active" id="page-overview">
+        <div class="widget-grid" id="statsGrid">
+          <!-- populated by JS -->
+        </div>
+
+        <div class="glass" style="margin-bottom:28px;">
+          <div style="padding:20px 24px 0;"><h3 style="margin:0;font-size:15px;">Workflow Pipeline</h3></div>
+          <div class="workflow-graph" id="workflowGraph">
+            <!-- populated by JS -->
+          </div>
+        </div>
+
+        <div class="glass" style="padding:20px 24px;">
+          <h3 style="margin:0 0 14px;font-size:15px;">Recent Runs</h3>
+          <div class="table-wrap">
+            <table class="data-table" id="recentRunsTable">
+              <thead><tr><th>Objective</th><th>Status</th><th>Stage</th><th>Revisions</th><th>Created</th></tr></thead>
+              <tbody></tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- ============ NEW RUN PAGE ============ -->
+      <section class="page" id="page-new-run">
+        <div class="new-run-card glass">
+          <h3 style="margin-top:0;">Start a New Research Run</h3>
+          <p class="text-secondary" style="font-size:13.5px;margin-top:-6px;">
+            Describe the decision or research objective. The Supervisor agent will break it into research questions automatically.
+          </p>
+          <div class="field">
+            <label id="objectiveLabel">Research objective</label>
+            <textarea id="objectiveInput" maxlength="500" placeholder="e.g. Should our startup migrate from a monolith to microservices?"></textarea>
+            <span class="char-count"><span id="charCount">0</span>/500</span>
+          </div>
+          <div class="form-row">
+            <button class="btn btn-ghost" id="clearObjectiveBtn">Clear</button>
+            <button class="btn btn-primary" id="submitObjectiveBtn">
+              <i data-lucide="rocket" style="width:15px;height:15px"></i>
+              <span class="btn-label">Launch Workflow</span>
+            </button>
+          </div>
+        </div>
+      </section>
+
+      <!-- ============ ALL RUNS PAGE ============ -->
+      <section class="page" id="page-runs">
+        <div class="glass" style="padding:20px 24px;">
+          <h3 style="margin:0 0 14px;font-size:15px;">All Workflow Runs</h3>
+          <div class="table-wrap">
+            <table class="data-table" id="allRunsTable">
+              <thead><tr><th>Objective</th><th>Status</th><th>Stage</th><th>Revisions</th><th>Created</th></tr></thead>
+              <tbody></tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- ============ LIVE MONITOR PAGE ============ -->
+      <section class="page" id="page-monitor">
+        <div class="glass" style="margin-bottom:20px;padding:16px 20px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;">
+          <div>
+            <h3 style="margin:0;font-size:15px;" id="monitorTitle">No run selected</h3>
+            <span class="text-tertiary" id="monitorSubtitle" style="font-size:12.5px;">Select a run from "All Runs" to watch it live.</span>
+          </div>
+          <span class="badge badge-muted" id="monitorStatusBadge"><span class="badge-dot"></span>idle</span>
+        </div>
+
+        <div id="clarificationContainer"></div>
+
+        <div class="glass" style="margin-bottom:20px;">
+          <div style="padding:20px 24px 0;"><h3 style="margin:0;font-size:14px;">Workflow Graph</h3></div>
+          <div class="workflow-graph" id="monitorWorkflowGraph"></div>
+        </div>
+
+        <div class="agent-grid" id="agentGrid"></div>
+
+        <div class="glass">
+          <div style="padding:20px 24px 0;"><h3 style="margin:0;font-size:14px;">Execution Timeline</h3></div>
+          <div class="timeline" id="timelineList"></div>
+        </div>
+      </section>
+
+      <!-- ============ REPORT VIEWER PAGE ============ -->
+      <section class="page" id="page-report">
+        <div class="report-actions">
+          <button class="btn btn-ghost" id="copyReportBtn"><i data-lucide="copy" style="width:14px;height:14px"></i><span class="btn-label">Copy Markdown</span></button>
+          <a class="btn btn-primary" id="downloadReportBtn" href="#"><i data-lucide="download" style="width:14px;height:14px"></i><span class="btn-label">Download .md</span></a>
+        </div>
+        <div class="report-layout">
+          <div class="glass report-toc" id="reportToc">
+            <strong style="font-size:12px;color:var(--text-tertiary);">ON THIS PAGE</strong>
+          </div>
+          <div class="glass report-body" id="reportBody">
+            <div class="empty-state">
+              <i data-lucide="file-text" style="width:32px;height:32px;"></i>
+              <p>Select a completed run to view its report.</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+    </div>
+  </div>
+</div>
+
+<div class="toast-container" id="toastContainer"></div>
+
+<script src="/js/theme.js"></script>
+<script src="/js/api.js"></script>
+<script src="/js/dashboard.js"></script>
+</body>
+</html>

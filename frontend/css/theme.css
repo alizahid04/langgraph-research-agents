@@ -1,0 +1,293 @@
+/* ==========================================================================
+   Theme: Design tokens, glassmorphism primitives, dark/light mode
+   ========================================================================== */
+
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Manrope:wght@500;600;700;800&display=swap');
+
+:root {
+  /* Brand gradient */
+  --grad-primary: linear-gradient(135deg, #6366f1 0%, #8b5cf6 55%, #06b6d4 100%);
+  --grad-primary-soft: linear-gradient(135deg, rgba(99,102,241,0.16) 0%, rgba(139,92,246,0.16) 55%, rgba(6,182,212,0.16) 100%);
+
+  --color-primary: #7c6cf6;
+  --color-accent: #22d3ee;
+  --color-success: #10b981;
+  --color-warning: #f59e0b;
+  --color-danger: #f43f5e;
+
+  --radius-lg: 20px;
+  --radius-md: 16px;
+  --radius-sm: 10px;
+
+  --font-display: 'Manrope', 'Inter', sans-serif;
+  --font-body: 'Inter', sans-serif;
+
+  --transition-fast: 150ms cubic-bezier(.2,.8,.2,1);
+  --transition-med: 280ms cubic-bezier(.2,.8,.2,1);
+  --transition-slow: 480ms cubic-bezier(.2,.8,.2,1);
+}
+
+/* ---- Dark mode (default) ----
+   Scoped explicitly to :root/html so no descendant element (e.g. <body>)
+   can accidentally redeclare these variables and override the active
+   theme for everything nested inside it. See js/theme.js for the full
+   explanation of the bug this prevents. */
+:root, html[data-theme="dark"] {
+  --bg-base: #0a0b10;
+  --bg-elevated: #101220;
+  --bg-glass: rgba(255,255,255,0.045);
+  --bg-glass-strong: rgba(255,255,255,0.07);
+  --border-glass: rgba(255,255,255,0.09);
+  --border-glass-strong: rgba(255,255,255,0.16);
+  --text-primary: rgba(255,255,255,0.94);
+  --text-secondary: rgba(255,255,255,0.62);
+  --text-tertiary: rgba(255,255,255,0.38);
+  --shadow-soft: 0 8px 30px rgba(0,0,0,0.35);
+  --shadow-glow: 0 0 0 1px rgba(124,108,246,0.25), 0 0 24px rgba(124,108,246,0.18);
+}
+
+/* ---- Light mode ---- */
+html[data-theme="light"] {
+  --bg-base: #f5f6fb;
+  --bg-elevated: #ffffff;
+  --bg-glass: rgba(255,255,255,0.65);
+  --bg-glass-strong: rgba(255,255,255,0.85);
+  --border-glass: rgba(15,15,35,0.08);
+  --border-glass-strong: rgba(15,15,35,0.14);
+  --text-primary: rgba(15,16,32,0.92);
+  --text-secondary: rgba(15,16,32,0.6);
+  --text-tertiary: rgba(15,16,32,0.4);
+  --shadow-soft: 0 8px 30px rgba(15,16,35,0.08);
+  --shadow-glow: 0 0 0 1px rgba(124,108,246,0.18), 0 0 24px rgba(124,108,246,0.12);
+}
+
+* { box-sizing: border-box; }
+
+html, body {
+  margin: 0;
+  padding: 0;
+  background: var(--bg-base);
+  color: var(--text-primary);
+  font-family: var(--font-body);
+  -webkit-font-smoothing: antialiased;
+  scroll-behavior: smooth;
+}
+
+h1, h2, h3, h4, .font-display {
+  font-family: var(--font-display);
+  letter-spacing: -0.02em;
+}
+
+a { color: inherit; text-decoration: none; }
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* ---- Background ambient gradient ---- */
+.bg-ambient {
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  background:
+    radial-gradient(600px circle at 15% 10%, rgba(99,102,241,0.16), transparent 55%),
+    radial-gradient(700px circle at 85% 20%, rgba(6,182,212,0.12), transparent 55%),
+    radial-gradient(800px circle at 50% 100%, rgba(139,92,246,0.10), transparent 55%);
+}
+
+/* ---- Glass surface primitives ---- */
+.glass {
+  background: var(--bg-glass);
+  border: 1px solid var(--border-glass);
+  backdrop-filter: blur(18px) saturate(140%);
+  -webkit-backdrop-filter: blur(18px) saturate(140%);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-soft);
+  transition: transform var(--transition-med), box-shadow var(--transition-med), border-color var(--transition-med);
+}
+
+.glass-card {
+  padding: 24px;
+}
+
+.glass:hover {
+  transform: translateY(-3px);
+  border-color: var(--border-glass-strong);
+}
+
+.glass-glow:hover {
+  box-shadow: var(--shadow-glow), var(--shadow-soft);
+}
+
+/* ---- Text helpers ---- */
+.text-secondary { color: var(--text-secondary); }
+.text-tertiary { color: var(--text-tertiary); }
+.gradient-text {
+  background: var(--grad-primary);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+/* ---- Buttons ---- */
+.btn {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  font-family: var(--font-body);
+  font-weight: 600;
+  font-size: 14px;
+  padding: 12px 22px;
+  border-radius: 12px;
+  border: 1px solid transparent;
+  cursor: pointer;
+  overflow: hidden;
+  transition: transform var(--transition-fast), box-shadow var(--transition-fast), filter var(--transition-fast);
+  white-space: nowrap;
+}
+.btn:active { transform: scale(0.97); }
+
+.btn-primary {
+  background: var(--grad-primary);
+  color: white;
+  box-shadow: 0 6px 20px rgba(124,108,246,0.35);
+}
+.btn-primary:hover { filter: brightness(1.08); box-shadow: 0 8px 28px rgba(124,108,246,0.45); }
+
+.btn-ghost {
+  background: var(--bg-glass);
+  color: var(--text-primary);
+  border-color: var(--border-glass);
+}
+.btn-ghost:hover { border-color: var(--border-glass-strong); background: var(--bg-glass-strong); }
+
+.btn::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(circle, rgba(255,255,255,0.35) 0%, transparent 60%);
+  opacity: 0;
+  transform: scale(0);
+  transition: transform 420ms ease, opacity 420ms ease;
+}
+.btn:active::after { opacity: 1; transform: scale(2.4); }
+
+.btn-loading .btn-label { visibility: hidden; }
+.btn-loading::before {
+  content: '';
+  position: absolute;
+  width: 16px; height: 16px;
+  border-radius: 50%;
+  border: 2px solid rgba(255,255,255,0.35);
+  border-top-color: white;
+  animation: spin 700ms linear infinite;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* ---- Badges / pills ---- */
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  font-weight: 600;
+  padding: 4px 10px;
+  border-radius: 999px;
+  border: 1px solid var(--border-glass);
+  background: var(--bg-glass);
+  color: var(--text-secondary);
+}
+.badge-dot { width: 6px; height: 6px; border-radius: 50%; }
+.badge-success .badge-dot { background: var(--color-success); box-shadow: 0 0 8px var(--color-success); }
+.badge-warning .badge-dot { background: var(--color-warning); box-shadow: 0 0 8px var(--color-warning); }
+.badge-danger .badge-dot { background: var(--color-danger); box-shadow: 0 0 8px var(--color-danger); }
+.badge-info .badge-dot { background: var(--color-accent); box-shadow: 0 0 8px var(--color-accent); }
+.badge-muted .badge-dot { background: var(--text-tertiary); }
+
+/* ---- Scrollbar ---- */
+::-webkit-scrollbar { width: 10px; height: 10px; }
+::-webkit-scrollbar-thumb { background: var(--border-glass-strong); border-radius: 8px; }
+::-webkit-scrollbar-track { background: transparent; }
+
+/* ---- Fade/scale-in utility (used by JS on newly inserted elements) ---- */
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.animate-in { animation: fadeInUp var(--transition-slow) both; }
+
+@keyframes pulseGlow {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(99,102,241,0.45); }
+  50% { box-shadow: 0 0 0 8px rgba(99,102,241,0); }
+}
+.pulse { animation: pulseGlow 1.8s ease-in-out infinite; }
+
+@keyframes shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+.skeleton {
+  background: linear-gradient(90deg, var(--bg-glass) 25%, var(--bg-glass-strong) 50%, var(--bg-glass) 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.6s ease-in-out infinite;
+  border-radius: var(--radius-sm);
+}
+
+/* ---- Toasts ---- */
+.toast-container {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  z-index: 1000;
+}
+.toast {
+  min-width: 260px;
+  max-width: 360px;
+  padding: 14px 16px;
+  border-radius: var(--radius-sm);
+  font-size: 13px;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  animation: fadeInUp var(--transition-med) both;
+}
+.toast-success { border-left: 3px solid var(--color-success); }
+.toast-warning { border-left: 3px solid var(--color-warning); }
+.toast-danger { border-left: 3px solid var(--color-danger); }
+.toast-info { border-left: 3px solid var(--color-accent); }
+
+/* ---- Theme toggle ---- */
+.theme-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px;
+  border-radius: 999px;
+  background: var(--bg-glass);
+  border: 1px solid var(--border-glass);
+}
+.theme-toggle button {
+  border: none;
+  background: transparent;
+  color: var(--text-tertiary);
+  width: 30px; height: 30px;
+  border-radius: 999px;
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+.theme-toggle button.active {
+  background: var(--grad-primary);
+  color: white;
+}
