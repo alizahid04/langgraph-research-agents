@@ -204,7 +204,7 @@ Copy `.env.example` to `.env` and set both keys — **both are required**:
 | Variable              | Purpose                                         |
 |------------------------|--------------------------------------------------|
 | `OPENROUTER_API_KEY`  | **Required.** Enables real LLM calls via OpenRouter |
-| `OPENROUTER_MODEL`    | Model string, e.g. `openrouter/anthropic/claude-3.5-sonnet` |
+| `OPENROUTER_MODEL`    | Model string, e.g. `openrouter/anthropic/OPENAI:FREE` |
 | `TAVILY_API_KEY`      | **Required.** Enables real web search            |
 | `DATABASE_URL`        | Defaults to local SQLite file                    |
 | `MAX_REVISIONS`       | Critic revision-loop cap (default 2)             |
